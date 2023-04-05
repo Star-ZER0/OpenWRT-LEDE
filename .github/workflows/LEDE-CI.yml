@@ -77,7 +77,7 @@ jobs:
       - name: Custom Scripts
         run: |
           cd ./lede
-          $GITHUB_WORKSPACE/Scripts/Settings.sh
+          $GITHUB_WORKSPACE/Scripts/Settings-LEDE.sh
 
           cd ./package
           $GITHUB_WORKSPACE/Scripts/Plugins.sh
@@ -126,7 +126,7 @@ jobs:
           cp -rf ./.config ./upload/"$LEDE_TARGET"_Config_"$LEDE_DATE".txt
 
           cd ./upload
-          $GITHUB_WORKSPACE/Scripts/Renames.sh
+          $GITHUB_WORKSPACE/Scripts/Renames-LEDE.sh
 
       - name: Release Firmware
         uses: softprops/action-gh-release@v1

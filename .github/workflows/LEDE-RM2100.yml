@@ -1,4 +1,4 @@
-name: OpenWRT-Rockchip  #CI项目名
+name: LEDE-RM2100  #CI项目名
 
 on:
   schedule:  #自动编译：每天早上6点
@@ -6,12 +6,12 @@ on:
   workflow_dispatch:  #手动编译
 
 env:
-  OWRT_TARGET: Rockchip  #项目平台
-  OWRT_NAME: OWRT  #默认主机名
-  OWRT_IP: 192.168.2.1  #默认IP地址
+  LEDE_TARGET: RM2100  #项目平台
+  LEDE_NAME: LEDE  #默认主机名
+  LEDE_IP: 192.168.1.1  #默认IP地址
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   LEDE_URL: https://github.com/coolsnowwolf/lede.git
-  LIST_URL: https://raw.githubusercontent.com/VIKINGYFY/OpenWRT-LEDE/main/Depends.txt
+  LIST_URL: https://raw.githubusercontent.com/Star-ZER0/OpenWRT-LEDE/main/Depends.txt
 
 permissions: write-all
 
@@ -70,7 +70,7 @@ jobs:
           cd ./lede
 
           rm -rf ./tmp && rm -rf ./.config*
-          cat $GITHUB_WORKSPACE/Config/$OWRT_TARGET.txt $GITHUB_WORKSPACE/Config/General.txt >> .config
+          cat $GITHUB_WORKSPACE/Config/$LEDE_TARGET.txt $GITHUB_WORKSPACE/Config/General.txt >> .config
 
           make defconfig
 
@@ -96,17 +96,17 @@ jobs:
 
       - name: Package Firmware
         run: |
-          export OWRT_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Config/$OWRT_TARGET.txt)
-          export OWRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
+          export LEDE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Config/$LEDE_TARGET.txt)
+          export LEDE_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
 
-          echo "OWRT_TARGET=$OWRT_TARGET" >> $GITHUB_ENV
-          echo "OWRT_DATE=$OWRT_DATE" >> $GITHUB_ENV
-          echo "OWRT_TYPE=$OWRT_TYPE" >> $GITHUB_ENV
-          echo "OWRT_IP=$OWRT_IP" >> $GITHUB_ENV
+          echo "LEDE_TARGET=$LEDE_TARGET" >> $GITHUB_ENV
+          echo "LEDE_DATE=$LEDE_DATE" >> $GITHUB_ENV
+          echo "LEDE_TYPE=$LEDE_TYPE" >> $GITHUB_ENV
+          echo "LEDE_IP=$LEDE_IP" >> $GITHUB_ENV
 
           cd ./lede && mkdir ./upload
           cp -rf $(find ./bin/targets/ -type f -iregex ".*\.\(bin\|iso\|vmdk\|img.gz\)") ./upload/
-          cp -rf ./.config ./upload/"$OWRT_TARGET"_Config_"$OWRT_DATE".txt
+          cp -rf ./.config ./upload/"$LEDE_TARGET"_Config_"$LEDE_DATE".txt
 
           cd ./upload
           $GITHUB_WORKSPACE/Scripts/Renames.sh
@@ -114,13 +114,11 @@ jobs:
       - name: Release Firmware
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{env.OWRT_TARGET}}_OWRT_${{env.OWRT_DATE}}
+          tag_name: ${{env.LEDE_TARGET}}_LEDE_${{env.LEDE_DATE}}
           files: ./lede/upload/*.*
           body: |
-            这是个平台固件包，内含多个设备！
-            请注意选择你需要的设备固件！
-            设备：${{env.OWRT_TYPE}}
-            地址：${{env.OWRT_IP}}
+            设备：${{env.LEDE_TYPE}}
+            地址：${{env.LEDE_IP}}
             密码：password
 
       - name: Delete Old Releases

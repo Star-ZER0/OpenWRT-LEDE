@@ -6,10 +6,10 @@ on:
       target:
         description: 选择设备平台
         required: true
-        default: 'Redmi-AC2100'
+        default: 'RM2100'
         type: choice
         options:
-          - 'Redmi-AC2100'
+          - 'RM2100'
 
       name:
         description: 输入主机名字

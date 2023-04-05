@@ -11,7 +11,7 @@ env:
   LEDE_IP: 192.168.1.1  #默认IP地址
   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
   LEDE_URL: https://github.com/coolsnowwolf/lede.git
-  LIST_URL: https://raw.githubusercontent.com/Star-ZER0/OpenWRT-LEDE/main/Depends.txt
+  LIST_URL: https://raw.githubusercontent.com/Star-ZER0/OpenWrt-CI/main/Depends.txt
 
 permissions: write-all
 

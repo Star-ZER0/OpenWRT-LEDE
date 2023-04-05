@@ -1,33 +1,16 @@
-name: LEDE-CI  #CI项目名
+name: IMMORTALWRT-RM2100  #CI项目名
 
 on:
-  workflow_dispatch:
-    inputs:
-      target:
-        description: 选择设备平台
-        required: true
-        default: 'RM2100'
-        type: choice
-        options:
-          - 'RM2100'
+  schedule:  #自动编译：每天早上6点
+    - cron: 0 22 * * *
+  workflow_dispatch:  #手动编译
 
-      name:
-        description: 输入主机名字
-        required: true
-        default: 'LEDE'
-        type: string
-
-      address:
-        description: 输入登陆地址
-        required: true
-        default: '192.168.1.1'
-        type: string
 env:
-  LEDE_TARGET: ${{ inputs.target }}
-  LEDE_NAME: ${{ inputs.name }}
-  LEDE_IP: ${{ inputs.address }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  LEDE_URL: https://github.com/coolsnowwolf/lede.git
+  IMMORTALWRT_TARGET: RM2100  #项目平台
+  IMMORTALWRT_NAME: ImmortalWrt  #默认主机名
+  IMMORTALWRT_IP: 192.168.1.1  #默认IP地址
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+  IMMORTALWRT_URL: https://github.com/padavanonly/immortalwrt.git
   LIST_URL: https://raw.githubusercontent.com/Star-ZER0/OpenWrt-CI/main/Depends.txt
 
 permissions: write-all
@@ -63,43 +46,43 @@ jobs:
           chmod +x ./*.sh
           dos2unix ./*.sh
 
-      - name: Clone LEDE Code
+      - name: Clone ImmortalWrt Code
         run: |
-          git clone --depth=1 --single-branch $LEDE_URL
+          git clone --depth=1 --single-branch $IMMORTALWRT_URL
 
       - name: Update Feeds
         run: |
-          cd ./lede
+          cd ./immortalwrt
 
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: Custom Scripts
         run: |
-          cd ./lede
-          $GITHUB_WORKSPACE/Scripts/Settings-LEDE.sh
+          cd ./immortalwrt
+          $GITHUB_WORKSPACE/Scripts/Settings-ImmortalWrt.sh
 
           cd ./package
           $GITHUB_WORKSPACE/Scripts/Plugins.sh
 
       - name: Custom Settings
         run: |
-          cd ./lede
+          cd ./immortalwrt
 
           rm -rf ./tmp && rm -rf ./.config*
-          cat $GITHUB_WORKSPACE/Config/$LEDE_TARGET.txt $GITHUB_WORKSPACE/Config/General.txt >> .config
+          cat $GITHUB_WORKSPACE/Config/$IMMORTALWRT_TARGET.txt $GITHUB_WORKSPACE/Config/General.txt >> .config
 
           make defconfig
 
       - name: Download Packages
         run: |
-          cd ./lede
+          cd ./immortalwrt
 
           make download -j$(nproc)
 
       - name: Compile Firmware
         run: |
-          cd ./lede
+          cd ./immortalwrt
 
           make -j$(nproc) || make -j1 V=s
 
@@ -113,30 +96,36 @@ jobs:
 
       - name: Package Firmware
         run: |
-          export LEDE_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Config/$LEDE_TARGET.txt)
-          export LEDE_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
+          export IMMORTALWRT_TYPE=$(sed -n "1{s/^#//;s/\r$//;p;q}" $GITHUB_WORKSPACE/Config/$IMMORTALWRT_TARGET.txt)
+          export IMMORTALWRT_DATE=$(TZ=UTC-8 date +"%y.%m.%d_%H.%M.%S")
 
-          echo "LEDE_TARGET=$LEDE_TARGET" >> $GITHUB_ENV
-          echo "LEDE_DATE=$LEDE_DATE" >> $GITHUB_ENV
-          echo "LEDE_TYPE=$LEDE_TYPE" >> $GITHUB_ENV
-          echo "LEDE_IP=$LEDE_IP" >> $GITHUB_ENV
+          echo "IMMORTALWRT_TARGET=$IMMORTALWRT_TARGET" >> $GITHUB_ENV
+          echo "IMMORTALWRT_DATE=$IMMORTALWRT_DATE" >> $GITHUB_ENV
+          echo "IMMORTALWRT_TYPE=$IMMORTALWRT_TYPE" >> $GITHUB_ENV
+          echo "IMMORTALWRT_IP=$IMMORTALWRT_IP" >> $GITHUB_ENV
 
-          cd ./lede && mkdir ./upload
+          cd ./immortalwrt && mkdir ./upload
           cp -rf $(find ./bin/targets/ -type f -iregex ".*\.\(bin\|iso\|vmdk\|img.gz\)") ./upload/
-          cp -rf ./.config ./upload/"$LEDE_TARGET"_Config_"$LEDE_DATE".txt
+          cp -rf ./.config ./upload/"$IMMORTALWRT_TARGET"_Config_"$IMMORTALWRT_DATE".txt
 
           cd ./upload
-          $GITHUB_WORKSPACE/Scripts/Renames-LEDE.sh
+          $GITHUB_WORKSPACE/Scripts/Renames-ImmortalWrt.sh
 
       - name: Release Firmware
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{env.LEDE_TARGET}}_LEDE_${{env.LEDE_DATE}}
-          files: ./lede/upload/*.*
+          tag_name: ${{env.IMMORTALWRT_TARGET}}_IMMORTALWRT_${{env.IMMORTALWRT_DATE}}
+          files: ./immortalwrt/upload/*.*
           body: |
-            设备：${{env.LEDE_TYPE}}
-            地址：${{env.LEDE_IP}}
+            设备：${{env.IMMORTALWRT_TYPE}}
+            地址：${{env.IMMORTALWRT_IP}}
             密码：password
+
+      - name: Delete Old Releases
+        uses: dev-drprasad/delete-older-releases@v0.2.1
+        with:
+          keep_latest: 4
+          delete_tags: true
 
       - name: Delete Old Workflows
         uses: Mattraks/delete-workflow-runs@v2

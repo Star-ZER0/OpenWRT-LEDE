@@ -8,5 +8,3 @@ sed -i "s/OpenWrt/$IMMORTALWRT_NAME/g" ./package/base-files/files/bin/config_gen
 sed -i "s/192.168.1.1/$IMMORTALWRT_IP/g" ./package/base-files/files/bin/config_generate
 #修改默认主题
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' ./feeds/luci/collections/luci/Makefile
-#修改默认时间格式
-sed -i 's/os.date()/os.date("%Y-%m-%d %H:%M:%S %A")/g' $(find ./package/immortalwrt/autocore/files/ -type f -name "index.htm")

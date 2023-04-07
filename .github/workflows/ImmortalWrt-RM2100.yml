@@ -1,8 +1,8 @@
 name: ImmortalWrt-RM2100  #CI项目名
 
 on:
-  schedule:  #自动编译：每天早上6点
-    - cron: 0 22 * * *
+#  schedule:  #自动编译：每天早上6点
+#    - cron: 0 22 * * *
   workflow_dispatch:  #手动编译
 
 env:

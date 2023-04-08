@@ -8,7 +8,6 @@ CONFIG_DEFAULT_luci-app-filetransfer=n
 CONFIG_PACKAGE_luci-theme-argonv3=y
 CONFIG_PACKAGE_luci-proto-ipv6=y
 CONFIG_PACKAGE_luci-proto-wireguard=y
-CONFIG_PACKAGE_luci-theme-argon=y
 CONFIG_PACKAGE_luci-app-ddns=y
 CONFIG_PACKAGE_luci-app-upnp=y
 CONFIG_DEFAULT_luci-app-fileassistant=y

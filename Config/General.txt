@@ -7,8 +7,8 @@ CONFIG_DEFAULT_luci-app-filetransfer=n
 #Add
 CONFIG_PACKAGE_ipv6helper=y
 CONFIG_PACKAGE_luci-proto-ipv6=y
-CONFIG_PACKAGE_luci-theme-argonv3=y
-CONFIG_PACKAGE_luci-app-argon-config=y
+CONFIG_PACKAGE_luci-theme-design=y
+CONFIG_PACKAGE_luci-app-design-config=y
 CONFIG_PACKAGE_luci-app-ddns=y
 CONFIG_PACKAGE_luci-app-upnp=y
 CONFIG_DEFAULT_luci-app-fileassistant=y

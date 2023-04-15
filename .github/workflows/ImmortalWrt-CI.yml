@@ -27,7 +27,7 @@ env:
   IMMORTALWRT_NAME: ${{ inputs.name }}
   IMMORTALWRT_IP: ${{ inputs.address }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  IMMORTALWRT_URL: https://github.com/padavanonly/immortalwrt.git
+  IMMORTALWRT_URL: https://github.com/immortalwrt/immortalwrt.git
   LIST_URL: https://raw.githubusercontent.com/Star-ZER0/OpenWrt-CI/main/Depends.txt
 
 permissions: write-all
